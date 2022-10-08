@@ -1,7 +1,8 @@
+local QRCore = exports['qr-core']:GetCoreObject()
+
 local deadAnimDict = "ai_damage@dead@base"
 local deadAnim = "dead_e"
 deathTime = 0
-local sharedWeapons = exports['qr-core']:GetWeapons()
 -- Functions
 local function loadAnimDict(dict)
     while (not HasAnimDictLoaded(dict)) do
@@ -103,7 +104,7 @@ CreateThread(function()
                 local killerName = killerId ~= -1 and GetPlayerName(killerId) .. " " .. "("..GetPlayerServerId(killerId)..")" or Lang:t('info.self_death')
                 local weaponLabel = Lang:t('info.wep_unknown')
                 local weaponName = Lang:t('info.wep_unknown')
-                local weaponItem = sharedWeapons[killerWeapon]
+                local weaponItem = QRCore.Shared.Weapons[killerWeapon]
                 if weaponItem then
                     weaponLabel = weaponItem.label
                     weaponName = weaponItem.name

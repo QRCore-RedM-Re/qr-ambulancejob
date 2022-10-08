@@ -1,3 +1,4 @@
+local QRCore = exports['qr-core']:GetCoreObject()
 
 local getOutDict = 'script_re@campfire_massacre'
 local getOutAnim = 'cry_getup_man'
@@ -157,14 +158,14 @@ local function DoLimbAlert()
             else
                 limbDamageMsg = Lang:t('info.many_places')
             end
-            exports['qr-core']:Notify(9, limbDamageMsg, 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+            QRCore.Functions.Notify(9, limbDamageMsg, 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         end
     end
 end
 
 local function DoBleedAlert()
     if not isDead and tonumber(isBleeding) > 0 then
-        exports['qr-core']:Notify(9, Lang:t('info.bleed_alert', {bleedstate = Config.BleedingStates[tonumber(isBleeding)].label}), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(9, Lang:t('info.bleed_alert', {bleedstate = Config.BleedingStates[tonumber(isBleeding)].label}), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end
 
@@ -421,7 +422,7 @@ local function CheckWeaponDamage(ped)
         if Citizen.InvokeNative(0xDCF06D0CDFF68424, ped, GetHashKey(k), 0) then --HasPedBeenDamagedByWeapon(
             detected = true
             if not IsInDamageList(k) then
-                exports['qr-core']:Notify(9, Lang:t('info.status')..': '..v, 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+                QRCore.Functions.Notify(9, Lang:t('info.status')..': '..v, 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
                 CurrentDamageList[#CurrentDamageList+1] = k
             end
         end
@@ -609,7 +610,7 @@ RegisterNetEvent('ambulance:client:promptCheckin', function()
     if doctorCount >= Config.MinimalDoctors then
         TriggerServerEvent("hospital:server:SendDoctorAlert")
     else
-        exports['qr-core']:Progressbar("hospital_checkin", Lang:t('progress.checking_in'), 2000, false, true, {
+        QRCore.Functions.Progressbar("hospital_checkin", Lang:t('progress.checking_in'), 2000, false, true, {
             disableMovement = true,
             disableCarMovement = true,
             disableMouse = false,
@@ -620,10 +621,20 @@ RegisterNetEvent('ambulance:client:promptCheckin', function()
 
                 TriggerServerEvent("hospital:server:SendToBed", bedId, true)
             else
-                exports['qr-core']:Notify(9, Lang:t('error.beds_taken'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+                lib.notify({
+                    id = "healthy",
+                    title = Lang:t('error.beds_taken'),
+                    duration = 2500,
+                    style = {
+                        backgroundColor = '#141517',
+                        color = '#ffffff'
+                    },
+                    icon = 'heart-pulse',
+                    iconColor = '#2980B9'
+                })
             end
         end, function() -- Cancel
-            exports['qr-core']:Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end)
     end
 end)
@@ -632,15 +643,27 @@ RegisterNetEvent('ambulance:client:promptBed',function()
     if GetAvailableBed(closestBed) then
         TriggerServerEvent("hospital:server:SendToBed", closestBed, true)
     else
-        exports['qr-core']:Notify(9, Lang:t('error.beds_taken'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(9, Lang:t('error.beds_taken'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
 RegisterNetEvent('hospital:client:ambulanceAlert', function(coords, text)
-    exports['qr-core']:Notify(9, text, "ambulance")
+    QRCore.Functions.Notify(9, text, "ambulance")
     local transG = 250
     local blipText = Lang:t('info.ems_alert', {text = text})
     local blip = N_0x554d9d53f696d002(1664425300, coords.x, coords.y, coords.z) --AddBlip
+    lib.notify({
+        id = "ambulance_alert",
+        title = Lang:t('text.alert'),
+        duration = 5000,
+        description = text .. ' | ' .. street1name .. ' ' .. street2name,
+        style = {
+            backgroundColor = '#141517',
+            color = '#ffffff'
+        },
+        icon = 'circle-exclamation',
+        iconColor = '#C0392B'
+    })
     SetBlipSprite(blip, 960467426, 1)
     SetBlipScale(blip, 0.2)
     Citizen.InvokeNative(0x9CB1A1623062F402, blip, text) --SetBlipName
@@ -682,7 +705,7 @@ RegisterNetEvent('hospital:client:Revive', function()
     TriggerServerEvent("hospital:server:SetDeathStatus", false)
     TriggerServerEvent("hospital:server:SetLaststandStatus", false)
     emsNotified = false
-    exports['qr-core']:Notify(9, Lang:t('info.healthy'), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+    QRCore.Functions.Notify(9, Lang:t('info.healthy'), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
 end)
 
 RegisterNetEvent('hospital:client:SetPain', function()
@@ -724,7 +747,7 @@ RegisterNetEvent('hospital:client:HealInjuries', function(type)
         ResetPartial()
     end
     TriggerServerEvent("hospital:server:RestoreWeaponDamage")
-    exports['qr-core']:Notify(9, Lang:t('success.wounds_healed'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
+    QRCore.Functions.Notify(9, Lang:t('success.wounds_healed'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
 end)
 
 RegisterNetEvent('hospital:client:SendToBed', function(id, data, isRevive)
@@ -734,7 +757,7 @@ RegisterNetEvent('hospital:client:SendToBed', function(id, data, isRevive)
     CreateThread(function ()
         Wait(5)
         if isRevive then
-            exports['qr-core']:Notify(9, Lang:t('success.being_helped'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
+            QRCore.Functions.Notify(9, Lang:t('success.being_helped'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
             Wait(Config.AIHealTimer * 1000)
             TriggerEvent("hospital:client:Revive")
         else
@@ -758,10 +781,10 @@ end)
 RegisterNetEvent('hospital:client:SendBillEmail', function(amount)
     SetTimeout(math.random(2500, 4000), function()
         local gender = Lang:t('info.mr')
-        if exports['qr-core']:GetPlayerData().charinfo.gender == 1 then
+        if QRCore.Functions.GetPlayerData().charinfo.gender == 1 then
             gender = Lang:t('info.mrs')
         end
-        local charinfo = exports['qr-core']:GetPlayerData().charinfo
+        local charinfo = QRCore.Functions.GetPlayerData().charinfo
         TriggerServerEvent('qr-phone:server:sendNewMail', {
             sender = Lang:t('mail.sender'),
             subject = Lang:t('mail.subject'),

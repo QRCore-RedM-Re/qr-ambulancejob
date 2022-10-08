@@ -1,3 +1,5 @@
+local QRCore = exports['qr-core']:GetCoreObject()
+
 Laststand = Laststand or {}
 Laststand.ReviveInterval = 360
 Laststand.MinimumRevive = 300
@@ -7,10 +9,9 @@ lastStandDict = "ai_combat@damage@writhe@base"
 lastStandAnim = "writhe_loop"
 isEscorted = false
 local isEscorting = false
-local sharedWeapons = exports['qr-core']:GetWeapons()
 -- Functions
 local function GetClosestPlayer()
-    local closestPlayers = exports['qr-core']:GetPlayersFromCoords()
+    local closestPlayers = QRCore.Functions.GetPlayersFromCoords()
     local closestDistance = -1
     local closestPlayer = -1
     local coords = GetEntityCoords(PlayerPedId())
@@ -92,8 +93,17 @@ function SetLaststand(bool, spawn)
                     LaststandTime = LaststandTime - 1
                     Config.DeathTime = LaststandTime
                 elseif LaststandTime - 1 <= 0 then
-                    exports['qr-core']:Notify(9, Lang:t('error.bled_out'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-                    SetLaststand(false)
+                    lib.notify({
+                        id = 'bled_out',
+                        title = Lang:t('error.bled_out'),
+                        duration = 2500,
+                        style = {
+                            backgroundColor = '#141517',
+                            color = '#ffffff'
+                        },
+                        icon = 'droplet',
+                        iconColor = '#C0392B'
+                    })                    SetLaststand(false)
                     local killer_2, killerWeapon = NetworkGetEntityKillerOfPlayer(player)
                     local killer = GetPedSourceOfDeath(ped)
 
@@ -105,7 +115,7 @@ function SetLaststand(bool, spawn)
                     local killerName = killerId ~= -1 and GetPlayerName(killerId) .. " " .. "("..GetPlayerServerId(killerId)..")" or Lang:t('info.self_death')
                     local weaponLabel = Lang:t('info.wep_unknown')
                     local weaponName = Lang:t('info.wep_unknown')
-                    local weaponItem = sharedWeapons[killerWeapon]
+                    local weaponItem = QRCore.Shared.Weapons[killerWeapon]
                     if weaponItem then
                         weaponLabel = weaponItem.label
                         weaponName = weaponItem.name
@@ -144,7 +154,17 @@ RegisterNetEvent('hospital:client:UseFirstAid', function()
             TriggerServerEvent('hospital:server:UseFirstAid', playerId)
         end
     else
-        exports['qr-core']:Notify(9, Lang:t('error.impossible'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        lib.notify({
+            id = 'impossible',
+            title = Lang:t('error.impossible'),
+            duration = 2500,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'face-angry',
+            iconColor = '#C0392B'
+        })
     end
 end)
 
@@ -162,24 +182,49 @@ end)
 
 RegisterNetEvent('hospital:client:HelpPerson', function(targetId)
     local ped = PlayerPedId()
-    isHealingPerson = true
-    exports['qr-core']:Progressbar("hospital_revive", Lang:t('progress.revive'), math.random(30000, 60000), false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-        disableMouse = false,
-        disableCombat = true,
-    }, {
-        animDict = healAnimDict,
-        anim = healAnim,
-        flags = 1,
-    }, {}, {}, function() -- Done
-        isHealingPerson = false
+    if lib.progressCircle({
+        duration = math.random(30000, 60000),
+        position = 'bottom',
+        label = Lang:t('progress.revive'),
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            move = false,
+            car = false,
+            combat = true,
+            mouse = false,
+        },
+        anim = {
+            dict = healAnimDict,
+            clip = healAnim,
+        },
+    })
+    then
         ClearPedTasks(ped)
-        exports['qr-core']:Notify(9, Lang:t('success.revived'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
+        lib.notify({
+            id = 'revived',
+            title = Lang:t('success.revived'),
+            duration = 2500,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'kit-medical',
+            iconColor = '#27ae60'
+        })
         TriggerServerEvent("hospital:server:RevivePlayer", targetId)
-    end, function() -- Cancel
-        isHealingPerson = false
+    else
         ClearPedTasks(ped)
-        exports['qr-core']:Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-    end)
+        lib.notify({
+            id = 'canceled',
+            title = Lang:t('error.canceled'),
+            duration = 2500,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'xmark',
+            iconColor = '#C0392B'
+        })
+    end
 end)

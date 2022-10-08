@@ -1,6 +1,6 @@
 local PlayerInjuries = {}
 local PlayerWeaponWounds = {}
-local sharedItems = exports['qr-core']:GetItems()
+local QRCore = exports['qr-core']:GetCoreObject()
 -- Events
 
 -- Compatibility with txAdmin Menu's heal options.
@@ -16,7 +16,7 @@ end)
 
 RegisterNetEvent('hospital:server:SendToBed', function(bedId, isRevive)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	TriggerClientEvent('hospital:client:SendToBed', src, bedId, Config.Locations["beds"][bedId], isRevive)
 	TriggerClientEvent('hospital:client:SetBed', -1, bedId, true)
 	Player.Functions.RemoveMoney("bank", Config.BillCost , "respawned-at-hospital")
@@ -26,7 +26,7 @@ end)
 
 RegisterNetEvent('hospital:server:RespawnAtHospital', function(closestBed)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	-- Check if Bed is taken else send to Bed 1
 	if not Config.Locations["beds"][closestBed].taken then
 		TriggerClientEvent('hospital:client:SendToBed', src, closestBed, Config.Locations["beds"][closestBed], true)
@@ -58,7 +58,7 @@ RegisterNetEvent('hospital:server:ambulanceAlert', function(text)
     local src = source
     local ped = GetPlayerPed(src)
     local coords = GetEntityCoords(ped)
-    local players = exports['qr-core']:GetQBPlayers()
+    local players = QRCore.Functions.GetQRPlayers()
     for k,v in pairs(players) do
         if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
             TriggerClientEvent('hospital:client:ambulanceAlert', v.PlayerData.source, coords, text)
@@ -77,7 +77,7 @@ end)
 
 RegisterNetEvent('hospital:server:SetWeaponDamage', function(data)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player then
 		PlayerWeaponWounds[Player.PlayerData.source] = data
 	end
@@ -85,13 +85,13 @@ end)
 
 RegisterNetEvent('hospital:server:RestoreWeaponDamage', function()
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	PlayerWeaponWounds[Player.PlayerData.source] = nil
 end)
 
 RegisterNetEvent('hospital:server:SetDeathStatus', function(isDead)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player then
 		Player.Functions.SetMetaData("isdead", isDead)
 	end
@@ -99,7 +99,7 @@ end)
 
 RegisterNetEvent('hospital:server:SetLaststandStatus', function(bool)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player then
 		Player.Functions.SetMetaData("inlaststand", bool)
 	end
@@ -107,7 +107,7 @@ end)
 
 RegisterNetEvent('hospital:server:SetArmor', function(amount)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player then
 		Player.Functions.SetMetaData("armor", amount)
 	end
@@ -115,12 +115,12 @@ end)
 
 RegisterNetEvent('hospital:server:TreatWounds', function(playerId)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
-	local Patient = exports['qr-core']:GetPlayer(playerId)
+	local Player = QRCore.Functions.GetPlayer(src)
+	local Patient = QRCore.Functions.GetPlayer(playerId)
 	if Patient then
 		if Player.PlayerData.job.name =="ambulance" then
 			Player.Functions.RemoveItem('bandage', 1)
-			TriggerClientEvent('inventory:client:ItemBox', src, sharedItems['bandage'], "remove")
+			TriggerClientEvent('inventory:client:ItemBox', src, QRCore.Shared.Items['bandage'], "remove")
 			TriggerClientEvent("hospital:client:HealInjuries", Patient.PlayerData.source, "full")
 		end
 	end
@@ -128,7 +128,7 @@ end)
 
 RegisterNetEvent('hospital:server:SetDoctor', function()
 	local amount = 0
-    local players = exports['qr-core']:GetQBPlayers()
+    local players = QRCore.Functions.GetQRPlayers()
     for k,v in pairs(players) do
         if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
             amount = amount + 1
@@ -139,28 +139,28 @@ end)
 
 RegisterNetEvent('hospital:server:RevivePlayer', function(playerId, isOldMan)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
-	local Patient = exports['qr-core']:GetPlayer(playerId)
+	local Player = QRCore.Functions.GetPlayer(src)
+	local Patient = QRCore.Functions.GetPlayer(playerId)
 	local oldMan = isOldMan or false
 	if Patient then
 		if oldMan then
 			if Player.Functions.RemoveMoney("cash", 5000, "revived-player") then
 				Player.Functions.RemoveItem('firstaid', 1)
-				TriggerClientEvent('inventory:client:ItemBox', src, sharedItems['firstaid'], "remove")
+				TriggerClientEvent('inventory:client:ItemBox', src, QRCore.Shared.Items['firstaid'], "remove")
 				TriggerClientEvent('hospital:client:Revive', Patient.PlayerData.source)
 			else
 				TriggerClientEvent('QRCore:Notify', src, 9, Lang:t('error.not_enough_money'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
 			end
 		else
 			Player.Functions.RemoveItem('firstaid', 1)
-			TriggerClientEvent('inventory:client:ItemBox', src, sharedItems['firstaid'], "remove")
+			TriggerClientEvent('inventory:client:ItemBox', src, QRCore.Shared.Items['firstaid'], "remove")
 			TriggerClientEvent('hospital:client:Revive', Patient.PlayerData.source)
 		end
 	end
 end)
 
 RegisterNetEvent('hospital:server:SendDoctorAlert', function()
-    local players = exports['qr-core']:GetQBPlayers()
+    local players = QRCore.Functions.GetQRPlayers()
     for k,v in pairs(players) do
         if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
 			TriggerClientEvent('QRCore:Notify', v.PlayerData.source, Lang:t('info.dr_needed'), 'ambulance')
@@ -170,7 +170,7 @@ end)
 
 RegisterNetEvent('hospital:server:UseFirstAid', function(targetId)
 	local src = source
-	local Target = exports['qr-core']:GetPlayer(targetId)
+	local Target = QRCore.Functions.GetPlayer(targetId)
 	if Target then
 		TriggerClientEvent('hospital:client:CanHelp', targetId, src)
 	end
@@ -187,9 +187,9 @@ end)
 
 -- Callbacks
 
-exports['qr-core']:CreateCallback('hospital:GetDoctors', function(source, cb)
+QRCore.Functions.CreateCallback('hospital:GetDoctors', function(source, cb)
 	local amount = 0
-    local players = exports['qr-core']:GetQBPlayers()
+    local players = QRCore.Functions.GetQRPlayers()
     for k,v in pairs(players) do
         if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
 			amount = amount + 1
@@ -198,8 +198,8 @@ exports['qr-core']:CreateCallback('hospital:GetDoctors', function(source, cb)
 	cb(amount)
 end)
 
-exports['qr-core']:CreateCallback('hospital:GetPlayerStatus', function(source, cb, playerId)
-	local Player = exports['qr-core']:GetPlayer(playerId)
+QRCore.Functions.CreateCallback('hospital:GetPlayerStatus', function(source, cb, playerId)
+	local Player = QRCore.Functions.GetPlayer(playerId)
 	local injuries = {}
 	injuries["WEAPONWOUNDS"] = {}
 	if Player then
@@ -222,7 +222,7 @@ exports['qr-core']:CreateCallback('hospital:GetPlayerStatus', function(source, c
     cb(injuries)
 end)
 
-exports['qr-core']:CreateCallback('hospital:GetPlayerBleeding', function(source, cb)
+QRCore.Functions.CreateCallback('hospital:GetPlayerBleeding', function(source, cb)
 	local src = source
 	if PlayerInjuries[src] and PlayerInjuries[src].isBleeding then
 		cb(PlayerInjuries[src].isBleeding)
@@ -233,12 +233,12 @@ end)
 
 -- Commands
 
-exports['qr-core']:AddCommand('911e', Lang:t('info.ems_report'), {{name = 'message', help = Lang:t('info.message_sent')}}, false, function(source, args)
+QRCore.Commands.Add('911e', Lang:t('info.ems_report'), {{name = 'message', help = Lang:t('info.message_sent')}}, false, function(source, args)
 	local src = source
 	if args[1] then message = table.concat(args, " ") else message = Lang:t('info.civ_call') end
     local ped = GetPlayerPed(src)
     local coords = GetEntityCoords(ped)
-    local players = exports['qr-core']:GetQBPlayers()
+    local players = QRCore.Functions.GetQRPlayers()
     for k,v in pairs(players) do
         if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
             TriggerClientEvent('hospital:client:ambulanceAlert', v.PlayerData.source, coords, message)
@@ -246,9 +246,9 @@ exports['qr-core']:AddCommand('911e', Lang:t('info.ems_report'), {{name = 'messa
     end
 end)
 
-exports['qr-core']:AddCommand("status", Lang:t('info.check_health'), {}, false, function(source, args)
+QRCore.Commands.Add("status", Lang:t('info.check_health'), {}, false, function(source, args)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player.PlayerData.job.name == "ambulance" then
 		TriggerClientEvent("hospital:client:CheckStatus", src)
 	else
@@ -256,9 +256,9 @@ exports['qr-core']:AddCommand("status", Lang:t('info.check_health'), {}, false, 
 	end
 end)
 
-exports['qr-core']:AddCommand("heal", Lang:t('info.heal_player'), {}, false, function(source, args)
+QRCore.Commands.Add("heal", Lang:t('info.heal_player'), {}, false, function(source, args)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player.PlayerData.job.name == "ambulance" then
 		TriggerClientEvent("hospital:client:TreatWounds", src)
 	else
@@ -266,9 +266,9 @@ exports['qr-core']:AddCommand("heal", Lang:t('info.heal_player'), {}, false, fun
 	end
 end)
 
-exports['qr-core']:AddCommand("revivep", Lang:t('info.revive_player'), {}, false, function(source, args)
+QRCore.Commands.Add("revivep", Lang:t('info.revive_player'), {}, false, function(source, args)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player.PlayerData.job.name == "ambulance" then
 		TriggerClientEvent("hospital:client:RevivePlayer", src)
 	else
@@ -276,10 +276,10 @@ exports['qr-core']:AddCommand("revivep", Lang:t('info.revive_player'), {}, false
 	end
 end)
 
-exports['qr-core']:AddCommand("revive", Lang:t('info.revive_player_a'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
+QRCore.Commands.Add("revive", Lang:t('info.revive_player_a'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
 	local src = source
 	if args[1] then
-		local Player = exports['qr-core']:GetPlayer(tonumber(args[1]))
+		local Player = QRCore.Functions.GetPlayer(tonumber(args[1]))
 		if Player then
 			TriggerClientEvent('hospital:client:Revive', Player.PlayerData.source)
 		else
@@ -290,10 +290,10 @@ exports['qr-core']:AddCommand("revive", Lang:t('info.revive_player_a'), {{name =
 	end
 end, "admin")
 
-exports['qr-core']:AddCommand("setpain", Lang:t('info.pain_level'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
+QRCore.Commands.Add("setpain", Lang:t('info.pain_level'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
 	local src = source
 	if args[1] then
-		local Player = exports['qr-core']:GetPlayer(tonumber(args[1]))
+		local Player = QRCore.Functions.GetPlayer(tonumber(args[1]))
 		if Player then
 			TriggerClientEvent('hospital:client:SetPain', Player.PlayerData.source)
 		else
@@ -304,10 +304,10 @@ exports['qr-core']:AddCommand("setpain", Lang:t('info.pain_level'), {{name = "id
 	end
 end, "admin")
 
-exports['qr-core']:AddCommand("kill", Lang:t('info.kill'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
+QRCore.Commands.Add("kill", Lang:t('info.kill'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
 	local src = source
 	if args[1] then
-		local Player = exports['qr-core']:GetPlayer(tonumber(args[1]))
+		local Player = QRCore.Functions.GetPlayer(tonumber(args[1]))
 		if Player then
 			TriggerClientEvent('hospital:client:KillPlayer', Player.PlayerData.source)
 		else
@@ -318,10 +318,10 @@ exports['qr-core']:AddCommand("kill", Lang:t('info.kill'), {{name = "id", help =
 	end
 end, "admin")
 
-exports['qr-core']:AddCommand('aheal', Lang:t('info.heal_player_a'), {{name = 'id', help = Lang:t('info.player_id')}}, false, function(source, args)
+QRCore.Commands.Add('aheal', Lang:t('info.heal_player_a'), {{name = 'id', help = Lang:t('info.player_id')}}, false, function(source, args)
 	local src = source
 	if args[1] then
-		local Player = exports['qr-core']:GetPlayer(tonumber(args[1]))
+		local Player = QRCore.Functions.GetPlayer(tonumber(args[1]))
 		if Player then
 			TriggerClientEvent('hospital:client:adminHeal', Player.PlayerData.source)
 		else
@@ -334,33 +334,33 @@ end, 'admin')
 
 -- Items
 
-exports['qr-core']:CreateUseableItem("ifaks", function(source, item)
+QRCore.Functions.CreateUseableItem("ifaks", function(source, item)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player.Functions.GetItemByName(item.name) ~= nil then
 		TriggerClientEvent("hospital:client:UseIfaks", src)
 	end
 end)
 
-exports['qr-core']:CreateUseableItem("bandage", function(source, item)
+QRCore.Functions.CreateUseableItem("bandage", function(source, item)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player.Functions.GetItemByName(item.name) ~= nil then
 		TriggerClientEvent("hospital:client:UseBandage", src)
 	end
 end)
 
-exports['qr-core']:CreateUseableItem("painkillers", function(source, item)
+QRCore.Functions.CreateUseableItem("painkillers", function(source, item)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player.Functions.GetItemByName(item.name) ~= nil then
 		TriggerClientEvent("hospital:client:UsePainkillers", src)
 	end
 end)
 
-exports['qr-core']:CreateUseableItem("firstaid", function(source, item)
+QRCore.Functions.CreateUseableItem("firstaid", function(source, item)
 	local src = source
-	local Player = exports['qr-core']:GetPlayer(src)
+	local Player = QRCore.Functions.GetPlayer(src)
 	if Player.Functions.GetItemByName(item.name) ~= nil then
 		TriggerClientEvent("hospital:client:UseFirstAid", src)
 	end

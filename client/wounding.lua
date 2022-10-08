@@ -1,4 +1,3 @@
-local sharedItems = exports['qr-core']:GetItems()
 local prevPos = nil
 onPainKillers = false
 local painkillerAmount = 0
@@ -8,11 +7,12 @@ local BandageDict = "mini_games@story@mob4@heal_jules@bandage@arthur"
 local BandageAnim = "bandage_fast"
 local PainkillersDict = "mini_games@story@mob4@heal_jules@bandage@arthur"
 local PainkillersAnim = "bandage_start"
+local QRCore = exports['qr-core']:GetCoreObject()
 
 -- Functions
 local function DoBleedAlert()
     if not isDead and tonumber(isBleeding) > 0 then
-        exports['qr-core']:Notify(9, "You are "..Config.BleedingStates[tonumber(isBleeding)].label, 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(9, "You are "..Config.BleedingStates[tonumber(isBleeding)].label, 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end
 
@@ -42,7 +42,7 @@ end
 
 RegisterNetEvent('hospital:client:UseIfaks', function()
     local ped = PlayerPedId()
-    exports['qr-core']:Progressbar("use_bandage", Lang:t('progress.ifaks'), 3000, false, true, {
+    QRCore.Functions.Progressbar("use_bandage", Lang:t('progress.ifaks'), 3000, false, true, {
         disableMovement = false,
         disableCarMovement = false,
 		disableMouse = false,
@@ -54,7 +54,7 @@ RegisterNetEvent('hospital:client:UseIfaks', function()
     }, {}, {}, function() -- Done
         StopAnimTask(ped, IfaksDict, IfaksAnim, 1.0)
         TriggerServerEvent("QRCore:Server:RemoveItem", "ifaks", 1)
-        TriggerEvent("inventory:client:ItemBox", sharedItems["ifaks"], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items["ifaks"], "remove")
         TriggerServerEvent('hud:server:RelieveStress', math.random(12, 24))
         SetEntityHealth(ped, GetEntityHealth(ped) + 10)
         onPainKillers = true
@@ -66,13 +66,13 @@ RegisterNetEvent('hospital:client:UseIfaks', function()
         end
     end, function() -- Cancel
         StopAnimTask(ped, IfaksDict, IfaksAnim, 1.0)
-        exports['qr-core']:Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
 RegisterNetEvent('hospital:client:UseBandage', function()
     local ped = PlayerPedId()
-    exports['qr-core']:Progressbar("use_bandage", Lang:t('progress.bandage'), 4000, false, true, {
+    QRCore.Functions.Progressbar("use_bandage", Lang:t('progress.bandage'), 4000, false, true, {
         disableMovement = false,
         disableCarMovement = false,
 		disableMouse = false,
@@ -84,7 +84,7 @@ RegisterNetEvent('hospital:client:UseBandage', function()
     }, {}, {}, function() -- Done
         StopAnimTask(ped, BandageDict, BandageAnim, 1.0)
         TriggerServerEvent("QRCore:Server:RemoveItem", "bandage", 1)
-        TriggerEvent("inventory:client:ItemBox", sharedItems["bandage"], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items["bandage"], "remove")
         SetEntityHealth(ped, GetEntityHealth(ped) + 10)
         if math.random(1, 100) < 50 then
             RemoveBleed(1)
@@ -94,13 +94,13 @@ RegisterNetEvent('hospital:client:UseBandage', function()
         end
     end, function() -- Cancel
         StopAnimTask(ped, BandageDict, BandageAnim, 1.0)
-        exports['qr-core']:Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
 RegisterNetEvent('hospital:client:UsePainkillers', function()
     local ped = PlayerPedId()
-    exports['qr-core']:Progressbar("use_bandage", Lang:t('progress.painkillers'), 3000, false, true, {
+    QRCore.Functions.Progressbar("use_bandage", Lang:t('progress.painkillers'), 3000, false, true, {
         disableMovement = false,
         disableCarMovement = false,
 		disableMouse = false,
@@ -112,14 +112,14 @@ RegisterNetEvent('hospital:client:UsePainkillers', function()
     }, {}, {}, function() -- Done
         StopAnimTask(ped, PainkillersDict, PainkillersAnim, 1.0)
         TriggerServerEvent("QRCore:Server:RemoveItem", "painkillers", 1)
-        TriggerEvent("inventory:client:ItemBox", sharedItems["painkillers"], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items["painkillers"], "remove")
         onPainKillers = true
         if painkillerAmount < 3 then
             painkillerAmount = painkillerAmount + 1
         end
     end, function() -- Cancel
         StopAnimTask(ped, PainkillersDict, PainkillersAnim, 1.0)
-        exports['qr-core']:Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
@@ -211,7 +211,7 @@ CreateThread(function()
                         local randX = math.random() + math.random(-1, 1)
                         local randY = math.random() + math.random(-1, 1)
                         local coords = GetOffsetFromEntityInWorldCoords(player, randX, randY, 0)
-                        TriggerServerEvent("evidence:server:CreateBloodDrop", exports['qr-core']:GetPlayerData().citizenid, exports['qr-core']:GetPlayerData().metadata["bloodtype"], coords)
+                        TriggerServerEvent("evidence:server:CreateBloodDrop", QRCore.Functions.GetPlayerData().citizenid, QRCore.Functions.GetPlayerData().metadata["bloodtype"], coords)
 
                         if advanceBleedTimer >= Config.AdvanceBleedTimer then
                             ApplyBleed(1)

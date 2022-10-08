@@ -1,6 +1,7 @@
 isHealingPerson = false
 healAnimDict = "mini_games@story@mob4@heal_jules@bandage@arthur"
 healAnim = "bandage_fast"
+local QRCore = exports['qr-core']:GetCoreObject()
 
 local statusCheckPed = nil
 local PlayerJob = {}
@@ -16,7 +17,7 @@ local function loadAnimDict(dict)
 end
 
 local function GetClosestPlayer()
-    local closestPlayers = exports['qr-core']:GetPlayersFromCoords()
+    local closestPlayers = QRCore.Functions.GetPlayersFromCoords()
     local closestDistance = -1
     local closestPlayer = -1
     local coords = GetEntityCoords(PlayerPedId())
@@ -48,14 +49,10 @@ end
 
 function TakeOutVehicle(vehicleInfo)
     local coords = Config.Locations["vehicle"][currentGarage]
-    exports['qr-core']:SpawnVehicle(vehicleInfo, function(veh)
+    QRCore.Functions.SpawnVehicle(vehicleInfo, function(veh)
         SetEntityHeading(veh, coords.w)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
 	Citizen.InvokeNative(0x400F9556,veh, Lang:t('info.amb_plate')..tostring(math.random(1000, 9999)))
-        -- if Config.VehicleSettings[vehicleInfo] ~= nil then
-        --     QRCore.Shared.SetDefaultVehicleExtras(veh, Config.VehicleSettings[vehicleInfo].extras)
-        -- end
-        --TriggerEvent("vehiclekeys:client:SetOwner", exports['qr-core']:GetPlate(veh))
         SetVehicleEngineOn(veh, true, true)
     end, coords, true)
 end
@@ -68,7 +65,7 @@ function MenuGarage()
         }
     }
 
-    local authorizedVehicles = Config.AuthorizedVehicles[exports['qr-core']:GetPlayerData().job.grade.level]
+    local authorizedVehicles = Config.AuthorizedVehicles[QRCore.Functions.GetPlayerData().job.grade.level]
     for veh, label in pairs(authorizedVehicles) do
         vehicleMenu[#vehicleMenu+1] = {
             header = label,
@@ -134,58 +131,58 @@ end
 
 -- Events
 RegisterNetEvent('ambulance:client:promptArmory', function()
-    exports['qr-core']:GetPlayerData(function(PlayerData)
+    QRCore.Functions.GetPlayerData(function(PlayerData)
         PlayerJob = PlayerData.job
         onDuty = PlayerData.job.onduty
         if PlayerJob.name == "ambulance"  then
             TriggerServerEvent("inventory:server:OpenInventory", "shop", "hospital", Config.Items)
         else
-            exports['qr-core']:Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end)
 end)
 
 RegisterNetEvent('ambulance:client:promptDuty', function()
-    exports['qr-core']:GetPlayerData(function(PlayerData)
+    QRCore.Functions.GetPlayerData(function(PlayerData)
         PlayerJob = PlayerData.job
         onDuty = PlayerData.job.onduty
         if PlayerJob.name == "ambulance"  then
             onDuty = not onDuty
             TriggerServerEvent("QRCore:ToggleDuty")
         else
-            exports['qr-core']:Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end)
 end)
 
 RegisterNetEvent('ambulance:client:promptVehicle', function(k)
-    exports['qr-core']:GetPlayerData(function(PlayerData)
+    QRCore.Functions.GetPlayerData(function(PlayerData)
         PlayerJob = PlayerData.job
         onDuty = PlayerData.job.onduty
         local ped = PlayerPedId()
 
         if PlayerJob.name == "ambulance"  then
             if IsPedInAnyVehicle(ped, false) then
-                exports['qr-core']:DeleteVehicle(GetVehiclePedIsIn(ped))
+                QRCore.Functions.DeleteVehicle(GetVehiclePedIsIn(ped))
             else
                 MenuGarage()
                 currentGarage = k
             end
         else
-            exports['qr-core']:Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end)
 end)
 
 RegisterNetEvent('ambulance:client:promptStash', function(k)
-    exports['qr-core']:GetPlayerData(function(PlayerData)
+    QRCore.Functions.GetPlayerData(function(PlayerData)
         PlayerJob = PlayerData.job
         onDuty = PlayerData.job.onduty
         if PlayerJob.name == "ambulance"  then
-            TriggerServerEvent("inventory:server:OpenInventory", "stash", "ambulancestash_"..exports['qr-core']:GetPlayerData().citizenid)
-            TriggerEvent("inventory:client:SetCurrentStash", "ambulancestash_"..exports['qr-core']:GetPlayerData().citizenid)
+            TriggerServerEvent("inventory:server:OpenInventory", "stash", "ambulancestash_"..QRCore.Functions.GetPlayerData().citizenid)
+            TriggerEvent("inventory:client:SetCurrentStash", "ambulancestash_"..QRCore.Functions.GetPlayerData().citizenid)
         else
-            exports['qr-core']:Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end)
 end)
@@ -213,7 +210,7 @@ RegisterNetEvent('QRCore:Client:OnPlayerLoaded', function()
     end)
     CreateThread(function()
         Wait(1000)
-        exports['qr-core']:GetPlayerData(function(PlayerData)
+        QRCore.Functions.GetPlayerData(function(PlayerData)
             PlayerJob = PlayerData.job
             onDuty = PlayerData.job.onduty
             if (not PlayerData.metadata["inlaststand"] and PlayerData.metadata["isdead"]) then
@@ -241,19 +238,37 @@ RegisterNetEvent('hospital:client:CheckStatus', function()
     if player ~= -1 and distance < 5.0 then
         local playerId = GetPlayerServerId(player)
         statusCheckPed = GetPlayerPed(player)
-        exports['qr-core']:TriggerCallback('hospital:GetPlayerStatus', function(result)
+        QRCore.Functions.TriggerCallback('hospital:GetPlayerStatus', function(result)
             if result then
                 for k, v in pairs(result) do
                     if k ~= "BLEED" and k ~= "WEAPONWOUNDS" then
                         statusChecks[#statusChecks+1] = {bone = Config.BoneIndexes[k], label = v.label .." (".. Config.WoundStates[v.severity] ..")"}
                     elseif result["WEAPONWOUNDS"] then
                         for k, v in pairs(result["WEAPONWOUNDS"]) do
-                            exports['qr-core']:Notify(9, Lang:t('info.status')..': '..WeaponDamageList[v], 2000, 0, 'mp_lobby_textures', 'cross')
-                        end
+                            TriggerEvent('chat:addMessage', {
+                                color = { 255, 0, 0 },
+                                multiline = false,
+                                args = { Lang:t('info.status'), QRCore.Shared.Weapons[v2].damagereason }
+                            })                        end
                     elseif result["BLEED"] > 0 then
-                        exports['qr-core']:Notify(9, Lang:t('info.status')..': '..Lang:t('info.is_status', {status = Config.BleedingStates[v].label}), 2000, 0, 'mp_lobby_textures', 'cross')
+                        TriggerEvent('chat:addMessage', {
+                            color = { 255, 0, 0 },
+                            multiline = false,
+                            args = { Lang:t('info.status'),
+                                Lang:t('info.is_status', { status = Config.BleedingStates[v].label }) }
+                        })
                     else
-                        exports['qr-core']:Notify(9, Lang:t('success.healthy_player'), 2000, 0, 'hud_textures', 'check')
+                        lib.notify({
+                            id = 'healthy_player',
+                            title = Lang:t('success.healthy_player'),
+                            duration = 2500,
+                            style = {
+                                backgroundColor = '#141517',
+                                color = '#ffffff'
+                            },
+                            icon = 'heal',
+                            iconColor = '#27ae60'
+                        })
                     end
                 end
                 isStatusChecking = true
@@ -261,76 +276,177 @@ RegisterNetEvent('hospital:client:CheckStatus', function()
             end
         end, playerId)
     else
-        exports['qr-core']:Notify(9, Lang:t('error.no_player'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        lib.notify({
+            id = 'no_player',
+            title = Lang:t('error.no_player'),
+            duration = 2500,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'xmark',
+            iconColor = '#C0392B'
+        })
     end
 end)
 
 RegisterNetEvent('hospital:client:RevivePlayer', function()
-    exports['qr-core']:TriggerCallback('QRCore:HasItem', function(hasItem)
+    QRCore.Functions.TriggerCallback('QRCore:HasItem', function(hasItem)
         if hasItem then
             local player, distance = GetClosestPlayer()
             if player ~= -1 and distance < 5.0 then
                 local playerId = GetPlayerServerId(player)
                 isHealingPerson = true
-                exports['qr-core']:Progressbar("hospital_revive", Lang:t('progress.revive'), 5000, false, true, {
-                    disableMovement = false,
-                    disableCarMovement = false,
-                    disableMouse = false,
-                    disableCombat = true,
-                }, {
-                    animDict = healAnimDict,
-                    anim = healAnim,
-                    flags = 1,
-                }, {}, {}, function() -- Done
-                    isHealingPerson = false
-                    StopAnimTask(PlayerPedId(), healAnimDict, healAnim, 1.0)
-                    exports['qr-core']:Notify(9, Lang:t('success.revived'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
+                if lib.progressCircle({
+                    duration = 5000,
+                    position = 'bottom',
+                    label = Lang:t('progress.revive'),
+                    useWhileDead = false,
+                    canCancel = true,
+                    disable = {
+                        move = false,
+                        car = false,
+                        combat = true,
+                        mouse = false,
+                    },
+                    anim = {
+                        dict = healAnimDict,
+                        clip = healAnim,
+                    },
+                })
+                then
+                    StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
+                    lib.notify({
+                        id = 'revived',
+                        title = Lang:t('success.revived'),
+                        duration = 2500,
+                        style = {
+                            backgroundColor = '#141517',
+                            color = '#27ae606'
+                        },
+                        icon = 'kit-medical',
+                        iconColor = '#C0392B'
+                    })
                     TriggerServerEvent("hospital:server:RevivePlayer", playerId)
-                end, function() -- Cancel
-                    isHealingPerson = false
-                    StopAnimTask(PlayerPedId(), healAnimDict, healAnim, 1.0)
-                    exports['qr-core']:Notify(9, Lang:t('error.cancled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-                end)
+                else
+                    StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
+                    lib.notify({
+                        id = 'canceled',
+                        title = Lang:t('error.canceled'),
+                        duration = 2500,
+                        style = {
+                            backgroundColor = '#141517',
+                            color = '#ffffff'
+                        },
+                        icon = 'xmark',
+                        iconColor = '#C0392B'
+                    })
+                end
             else
-                exports['qr-core']:Notify(9, Lang:t('error.no_player'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+                lib.notify({
+                    id = 'no_player',
+                    title = Lang:t('error.no_player'),
+                    duration = 2500,
+                    style = {
+                        backgroundColor = '#141517',
+                        color = '#ffffff'
+                    },
+                    icon = 'xmark',
+                    iconColor = '#C0392B'
+                })
             end
         else
-            exports['qr-core']:Notify(9, Lang:t('error.no_firstaid'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            lib.notify({
+                id = 'no_firstaid',
+                title = Lang:t('error.no_firstaid'),
+                duration = 2500,
+                style = {
+                    backgroundColor = '#141517',
+                    color = '#ffffff'
+                },
+                icon = 'xmark',
+                iconColor = '#C0392B'
+            })
         end
     end, 'firstaid')
 end)
 
 RegisterNetEvent('hospital:client:TreatWounds', function()
-    exports['qr-core']:TriggerCallback('QRCore:HasItem', function(hasItem)
+    QRCore.Functions.TriggerCallback('QRCore:HasItem', function(hasItem)
         if hasItem then
             local player, distance = GetClosestPlayer()
             if player ~= -1 and distance < 5.0 then
                 local playerId = GetPlayerServerId(player)
-                isHealingPerson = true
-                exports['qr-core']:Progressbar("hospital_healwounds", Lang:t('progress.healing'), 5000, false, true, {
-                    disableMovement = false,
-                    disableCarMovement = false,
-                    disableMouse = false,
-                    disableCombat = true,
-                }, {
-                    animDict = healAnimDict,
-                    anim = healAnim,
-                    flags = 1,
-                }, {}, {}, function() -- Done
-                    isHealingPerson = false
-                    StopAnimTask(PlayerPedId(), healAnimDict, healAnim, 1.0)
-                    exports['qr-core']:Notify(9, Lang:t('success.helped_player'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
-                    TriggerServerEvent("hospital:server:TreatWounds", playerId)
-                end, function() -- Cancel
-                    isHealingPerson = false
+                if lib.progressCircle({
+                    duration = 5000,
+                    position = 'bottom',
+                    label = Lang:t('progress.healing'),
+                    useWhileDead = false,
+                    canCancel = true,
+                    disable = {
+                        move = false,
+                        car = false,
+                        combat = true,
+                        mouse = false,
+                    },
+                    anim = {
+                        dict = healAnimDict,
+                        clip = healAnim,
+                    },
+                })
+                then
                     StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-                    exports['qr-core']:Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-                end)
+                    lib.notify({
+                        id = 'helped_player',
+                        title = Lang:t('success.helped_player'),
+                        duration = 2500,
+                        style = {
+                            backgroundColor = '#141517',
+                            color = '#27ae60'
+                        },
+                        icon = 'bandage',
+                        iconColor = '#C0392B'
+                    })
+                    TriggerServerEvent("hospital:server:TreatWounds", playerId)
+                else
+                    StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
+                    lib.notify({
+                        id = 'canceled',
+                        title = Lang:t('error.canceled'),
+                        duration = 2500,
+                        style = {
+                            backgroundColor = '#141517',
+                            color = '#ffffff'
+                        },
+                        icon = 'xmark',
+                        iconColor = '#C0392B'
+                    })
+                end
             else
-                exports['qr-core']:Notify(9, Lang:t('error.no_player'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+                lib.notify({
+                    id = 'no_player',
+                    title = Lang:t('error.no_player'),
+                    duration = 2500,
+                    style = {
+                        backgroundColor = '#141517',
+                        color = '#ffffff'
+                    },
+                    icon = 'xmark',
+                    iconColor = '#C0392B'
+                })
             end
         else
-            exports['qr-core']:Notify(9, Lang:t('error.no_bandage'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            lib.notify({
+                id = 'no_bandage',
+                title = Lang:t('error.no_bandage'),
+                duration = 2500,
+                style = {
+                    backgroundColor = '#141517',
+                    color = '#ffffff'
+                },
+                icon = 'xmark',
+                iconColor = '#C0392B'
+            })
         end
     end, 'bandage')
 end)

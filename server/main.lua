@@ -344,20 +344,20 @@ end)
 QRCore.Functions.CreateUseableItem("bandage", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
 	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-		TriggerClientEvent("hospital:client:UseBandage", src)
+		TriggerClientEvent("hospital:client:UseBandage", source, item.name)
 	end
 end)
 
 QRCore.Functions.CreateUseableItem("painkillers", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
 	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-		TriggerClientEvent("hospital:client:UsePainkillers", src)
+		TriggerClientEvent("hospital:client:UsePainkillers", source, item.name)
 	end
 end)
 
 QRCore.Functions.CreateUseableItem("firstaid", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
 	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-		TriggerClientEvent("hospital:client:UseFirstAid", src)
+		TriggerClientEvent("hospital:client:UseFirstAid", source, item.name)
 	end
 end)

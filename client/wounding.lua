@@ -40,7 +40,7 @@ end
 
 -- Events
 
-RegisterNetEvent('hospital:client:UseIfaks', function()
+RegisterNetEvent('hospital:client:UseIfaks', function(itemName)
     local ped = PlayerPedId()
     QRCore.Functions.Progressbar("use_bandage", Lang:t('progress.ifaks'), 3000, false, true, {
         disableMovement = false,
@@ -53,8 +53,7 @@ RegisterNetEvent('hospital:client:UseIfaks', function()
 		flags = 1,
     }, {}, {}, function() -- Done
         StopAnimTask(ped, IfaksDict, IfaksAnim, 1.0)
-        TriggerServerEvent("QRCore:Server:RemoveItem", "ifaks", 1)
-        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items["ifaks"], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items[itemName], "remove")
         TriggerServerEvent('hud:server:RelieveStress', math.random(12, 24))
         SetEntityHealth(ped, GetEntityHealth(ped) + 10)
         onPainKillers = true
@@ -70,7 +69,7 @@ RegisterNetEvent('hospital:client:UseIfaks', function()
     end)
 end)
 
-RegisterNetEvent('hospital:client:UseBandage', function()
+RegisterNetEvent('hospital:client:UseBandage', function(itemName)
     local ped = PlayerPedId()
     QRCore.Functions.Progressbar("use_bandage", Lang:t('progress.bandage'), 4000, false, true, {
         disableMovement = false,
@@ -83,8 +82,7 @@ RegisterNetEvent('hospital:client:UseBandage', function()
 		flags = 1,
     }, {}, {}, function() -- Done
         StopAnimTask(ped, BandageDict, BandageAnim, 1.0)
-        TriggerServerEvent("QRCore:Server:RemoveItem", "bandage", 1)
-        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items["bandage"], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items[itemName], "remove")
         SetEntityHealth(ped, GetEntityHealth(ped) + 10)
         if math.random(1, 100) < 50 then
             RemoveBleed(1)
@@ -98,7 +96,7 @@ RegisterNetEvent('hospital:client:UseBandage', function()
     end)
 end)
 
-RegisterNetEvent('hospital:client:UsePainkillers', function()
+RegisterNetEvent('hospital:client:UsePainkillers', function(itemName)
     local ped = PlayerPedId()
     QRCore.Functions.Progressbar("use_bandage", Lang:t('progress.painkillers'), 3000, false, true, {
         disableMovement = false,
@@ -111,8 +109,7 @@ RegisterNetEvent('hospital:client:UsePainkillers', function()
 		flags = 1,
     }, {}, {}, function() -- Done
         StopAnimTask(ped, PainkillersDict, PainkillersAnim, 1.0)
-        TriggerServerEvent("QRCore:Server:RemoveItem", "painkillers", 1)
-        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items["painkillers"], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items[itemName], "remove")
         onPainKillers = true
         if painkillerAmount < 3 then
             painkillerAmount = painkillerAmount + 1

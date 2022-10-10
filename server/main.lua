@@ -335,33 +335,29 @@ end, 'admin')
 -- Items
 
 QRCore.Functions.CreateUseableItem("ifaks", function(source, item)
-	local src = source
-	local Player = QRCore.Functions.GetPlayer(src)
-	if Player.Functions.GetItemByName(item.name) ~= nil then
-		TriggerClientEvent("hospital:client:UseIfaks", src)
-	end
+    local Player = QRCore.Functions.GetPlayer(source)
+	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+                TriggerClientEvent("hospital:client:UseIfaks", source, item.name)
+    end
 end)
 
 QRCore.Functions.CreateUseableItem("bandage", function(source, item)
-	local src = source
-	local Player = QRCore.Functions.GetPlayer(src)
-	if Player.Functions.GetItemByName(item.name) ~= nil then
-		TriggerClientEvent("hospital:client:UseBandage", src)
+    local Player = QRCore.Functions.GetPlayer(source)
+	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+		TriggerClientEvent("hospital:client:UseBandage", source, item.name)
 	end
 end)
 
 QRCore.Functions.CreateUseableItem("painkillers", function(source, item)
-	local src = source
-	local Player = QRCore.Functions.GetPlayer(src)
-	if Player.Functions.GetItemByName(item.name) ~= nil then
-		TriggerClientEvent("hospital:client:UsePainkillers", src)
+    local Player = QRCore.Functions.GetPlayer(source)
+	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+		TriggerClientEvent("hospital:client:UsePainkillers", source, item.name)
 	end
 end)
 
 QRCore.Functions.CreateUseableItem("firstaid", function(source, item)
-	local src = source
-	local Player = QRCore.Functions.GetPlayer(src)
-	if Player.Functions.GetItemByName(item.name) ~= nil then
-		TriggerClientEvent("hospital:client:UseFirstAid", src)
+    local Player = QRCore.Functions.GetPlayer(source)
+	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+		TriggerClientEvent("hospital:client:UseFirstAid", source, item.name)
 	end
 end)

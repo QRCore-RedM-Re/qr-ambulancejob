@@ -93,17 +93,8 @@ function SetLaststand(bool, spawn)
                     LaststandTime = LaststandTime - 1
                     Config.DeathTime = LaststandTime
                 elseif LaststandTime - 1 <= 0 then
-                    lib.notify({
-                        id = 'bled_out',
-                        title = Lang:t('error.bled_out'),
-                        duration = 2500,
-                        style = {
-                            backgroundColor = '#141517',
-                            color = '#ffffff'
-                        },
-                        icon = 'droplet',
-                        iconColor = '#C0392B'
-                    })                    SetLaststand(false)
+					QRCore.Functions.Notify(Lang:t('error.bled_out'), 'error')
+					SetLaststand(false)
                     local killer_2, killerWeapon = NetworkGetEntityKillerOfPlayer(player)
                     local killer = GetPedSourceOfDeath(ped)
 
@@ -154,17 +145,7 @@ RegisterNetEvent('hospital:client:UseFirstAid', function()
             TriggerServerEvent('hospital:server:UseFirstAid', playerId)
         end
     else
-        lib.notify({
-            id = 'impossible',
-            title = Lang:t('error.impossible'),
-            duration = 2500,
-            style = {
-                backgroundColor = '#141517',
-                color = '#ffffff'
-            },
-            icon = 'face-angry',
-            iconColor = '#C0392B'
-        })
+		QRCore.Functions.Notify(Lang:t('error.impossible'), 'error')
     end
 end)
 
@@ -201,20 +182,11 @@ RegisterNetEvent('hospital:client:HelpPerson', function(targetId)
     })
     then
         ClearPedTasks(ped)
-        lib.notify({
-            id = 'revived',
-            title = Lang:t('success.revived'),
-            duration = 2500,
-            style = {
-                backgroundColor = '#141517',
-                color = '#ffffff'
-            },
-            icon = 'kit-medical',
-            iconColor = '#27ae60'
-        })
+		QRCore.Functions.Notify(Lang:t('success.revived'), 'success')
         TriggerServerEvent("hospital:server:RevivePlayer", targetId)
     else
         ClearPedTasks(ped)
+		QRCore.Functions.Notify(Lang:t('error.canceled'), 'error')
         lib.notify({
             id = 'canceled',
             title = Lang:t('error.canceled'),

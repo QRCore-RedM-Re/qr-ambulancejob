@@ -158,14 +158,14 @@ local function DoLimbAlert()
             else
                 limbDamageMsg = Lang:t('info.many_places')
             end
-            QRCore.Functions.Notify(9, limbDamageMsg, 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+            QRCore.Functions.Notify(limbDamageMsg, 'primary')
         end
     end
 end
 
 local function DoBleedAlert()
     if not isDead and tonumber(isBleeding) > 0 then
-        QRCore.Functions.Notify(9, Lang:t('info.bleed_alert', {bleedstate = Config.BleedingStates[tonumber(isBleeding)].label}), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(Lang:t('info.bleed_alert', {bleedstate = Config.BleedingStates[tonumber(isBleeding)].label}), 'primary')
     end
 end
 
@@ -422,7 +422,7 @@ local function CheckWeaponDamage(ped)
         if Citizen.InvokeNative(0xDCF06D0CDFF68424, ped, GetHashKey(k), 0) then --HasPedBeenDamagedByWeapon(
             detected = true
             if not IsInDamageList(k) then
-                QRCore.Functions.Notify(9, Lang:t('info.status')..': '..v, 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+                QRCore.Functions.Notify(Lang:t('info.status')..': '..v, 'primary')
                 CurrentDamageList[#CurrentDamageList+1] = k
             end
         end
@@ -621,20 +621,10 @@ RegisterNetEvent('ambulance:client:promptCheckin', function()
 
                 TriggerServerEvent("hospital:server:SendToBed", bedId, true)
             else
-                lib.notify({
-                    id = "healthy",
-                    title = Lang:t('error.beds_taken'),
-                    duration = 2500,
-                    style = {
-                        backgroundColor = '#141517',
-                        color = '#ffffff'
-                    },
-                    icon = 'heart-pulse',
-                    iconColor = '#2980B9'
-                })
+				QRCore.Functions.Notify(Lang:t('error.beds_taken'), 'error')
             end
         end, function() -- Cancel
-            QRCore.Functions.Notify(9, Lang:t('error.canceled'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(Lang:t('error.canceled'), 'error')
         end)
     end
 end)
@@ -643,27 +633,16 @@ RegisterNetEvent('ambulance:client:promptBed',function()
     if GetAvailableBed(closestBed) then
         TriggerServerEvent("hospital:server:SendToBed", closestBed, true)
     else
-        QRCore.Functions.Notify(9, Lang:t('error.beds_taken'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        QRCore.Functions.Notify(Lang:t('error.beds_taken'), 'error')
     end
 end)
 
 RegisterNetEvent('hospital:client:ambulanceAlert', function(coords, text)
-    QRCore.Functions.Notify(9, text, "ambulance")
+    QRCore.Functions.Notify(text, "ambulance")
     local transG = 250
     local blipText = Lang:t('info.ems_alert', {text = text})
     local blip = N_0x554d9d53f696d002(1664425300, coords.x, coords.y, coords.z) --AddBlip
-    lib.notify({
-        id = "ambulance_alert",
-        title = Lang:t('text.alert'),
-        duration = 5000,
-        description = text .. ' | ' .. street1name .. ' ' .. street2name,
-        style = {
-            backgroundColor = '#141517',
-            color = '#ffffff'
-        },
-        icon = 'circle-exclamation',
-        iconColor = '#C0392B'
-    })
+	QRCore.Functions.Notify(Lang:t('text.alert'), 'ambulance')
     SetBlipSprite(blip, 960467426, 1)
     SetBlipScale(blip, 0.2)
     Citizen.InvokeNative(0x9CB1A1623062F402, blip, text) --SetBlipName
@@ -705,7 +684,7 @@ RegisterNetEvent('hospital:client:Revive', function()
     TriggerServerEvent("hospital:server:SetDeathStatus", false)
     TriggerServerEvent("hospital:server:SetLaststandStatus", false)
     emsNotified = false
-    QRCore.Functions.Notify(9, Lang:t('info.healthy'), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+    QRCore.Functions.Notify(Lang:t('info.healthy'), 'primary')
 end)
 
 RegisterNetEvent('hospital:client:SetPain', function()
@@ -747,7 +726,7 @@ RegisterNetEvent('hospital:client:HealInjuries', function(type)
         ResetPartial()
     end
     TriggerServerEvent("hospital:server:RestoreWeaponDamage")
-    QRCore.Functions.Notify(9, Lang:t('success.wounds_healed'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
+    QRCore.Functions.Notify(Lang:t('success.wounds_healed'), 'success')
 end)
 
 RegisterNetEvent('hospital:client:SendToBed', function(id, data, isRevive)
@@ -757,7 +736,7 @@ RegisterNetEvent('hospital:client:SendToBed', function(id, data, isRevive)
     CreateThread(function ()
         Wait(5)
         if isRevive then
-            QRCore.Functions.Notify(9, Lang:t('success.being_helped'), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
+            QRCore.Functions.Notify(Lang:t('success.being_helped'), 'success')
             Wait(Config.AIHealTimer * 1000)
             TriggerEvent("hospital:client:Revive")
         else

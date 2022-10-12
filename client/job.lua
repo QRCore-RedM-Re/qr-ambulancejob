@@ -137,7 +137,7 @@ RegisterNetEvent('ambulance:client:promptArmory', function()
         if PlayerJob.name == "ambulance"  then
             TriggerServerEvent("inventory:server:OpenInventory", "shop", "hospital", Config.Items)
         else
-            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(Lang:t('error.not_ems'), 'error')
         end
     end)
 end)
@@ -150,7 +150,7 @@ RegisterNetEvent('ambulance:client:promptDuty', function()
             onDuty = not onDuty
             TriggerServerEvent("QRCore:ToggleDuty")
         else
-            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(Lang:t('error.not_ems'), 'error')
         end
     end)
 end)
@@ -169,7 +169,7 @@ RegisterNetEvent('ambulance:client:promptVehicle', function(k)
                 currentGarage = k
             end
         else
-            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(Lang:t('error.not_ems'), 'error')
         end
     end)
 end)
@@ -182,7 +182,7 @@ RegisterNetEvent('ambulance:client:promptStash', function(k)
             TriggerServerEvent("inventory:server:OpenInventory", "stash", "ambulancestash_"..QRCore.Functions.GetPlayerData().citizenid)
             TriggerEvent("inventory:client:SetCurrentStash", "ambulancestash_"..QRCore.Functions.GetPlayerData().citizenid)
         else
-            QRCore.Functions.Notify(9, Lang:t('error.not_ems'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+            QRCore.Functions.Notify(Lang:t('error.not_ems'), 'error')
         end
     end)
 end)
@@ -258,17 +258,7 @@ RegisterNetEvent('hospital:client:CheckStatus', function()
                                 Lang:t('info.is_status', { status = Config.BleedingStates[v].label }) }
                         })
                     else
-                        lib.notify({
-                            id = 'healthy_player',
-                            title = Lang:t('success.healthy_player'),
-                            duration = 2500,
-                            style = {
-                                backgroundColor = '#141517',
-                                color = '#ffffff'
-                            },
-                            icon = 'heal',
-                            iconColor = '#27ae60'
-                        })
+						QRCore.Functions.Notify(Lang:t('success.healthy_player'), 'success')
                     end
                 end
                 isStatusChecking = true
@@ -276,17 +266,7 @@ RegisterNetEvent('hospital:client:CheckStatus', function()
             end
         end, playerId)
     else
-        lib.notify({
-            id = 'no_player',
-            title = Lang:t('error.no_player'),
-            duration = 2500,
-            style = {
-                backgroundColor = '#141517',
-                color = '#ffffff'
-            },
-            icon = 'xmark',
-            iconColor = '#C0392B'
-        })
+		QRCore.Functions.Notify(Lang:t('error.no_player'), 'error')
     end
 end)
 
@@ -316,57 +296,17 @@ RegisterNetEvent('hospital:client:RevivePlayer', function()
                 })
                 then
                     StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-                    lib.notify({
-                        id = 'revived',
-                        title = Lang:t('success.revived'),
-                        duration = 2500,
-                        style = {
-                            backgroundColor = '#141517',
-                            color = '#27ae606'
-                        },
-                        icon = 'kit-medical',
-                        iconColor = '#C0392B'
-                    })
+					QRCore.Functions.Notify(Lang:t('success.revived'), 'success')
                     TriggerServerEvent("hospital:server:RevivePlayer", playerId)
                 else
                     StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-                    lib.notify({
-                        id = 'canceled',
-                        title = Lang:t('error.canceled'),
-                        duration = 2500,
-                        style = {
-                            backgroundColor = '#141517',
-                            color = '#ffffff'
-                        },
-                        icon = 'xmark',
-                        iconColor = '#C0392B'
-                    })
+					QRCore.Functions.Notify(Lang:t('error.canceled'), 'error')
                 end
             else
-                lib.notify({
-                    id = 'no_player',
-                    title = Lang:t('error.no_player'),
-                    duration = 2500,
-                    style = {
-                        backgroundColor = '#141517',
-                        color = '#ffffff'
-                    },
-                    icon = 'xmark',
-                    iconColor = '#C0392B'
-                })
+				QRCore.Functions.Notify(Lang:t('error.no_player'), 'error')
             end
         else
-            lib.notify({
-                id = 'no_firstaid',
-                title = Lang:t('error.no_firstaid'),
-                duration = 2500,
-                style = {
-                    backgroundColor = '#141517',
-                    color = '#ffffff'
-                },
-                icon = 'xmark',
-                iconColor = '#C0392B'
-            })
+			QRCore.Functions.Notify(Lang:t('error.no_firstaid'), 'error')
         end
     end, 'firstaid')
 end)
@@ -396,57 +336,17 @@ RegisterNetEvent('hospital:client:TreatWounds', function()
                 })
                 then
                     StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-                    lib.notify({
-                        id = 'helped_player',
-                        title = Lang:t('success.helped_player'),
-                        duration = 2500,
-                        style = {
-                            backgroundColor = '#141517',
-                            color = '#27ae60'
-                        },
-                        icon = 'bandage',
-                        iconColor = '#C0392B'
-                    })
+					QRCore.Functions.Notify(Lang:t('success.helped_player'), 'success')
                     TriggerServerEvent("hospital:server:TreatWounds", playerId)
                 else
                     StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-                    lib.notify({
-                        id = 'canceled',
-                        title = Lang:t('error.canceled'),
-                        duration = 2500,
-                        style = {
-                            backgroundColor = '#141517',
-                            color = '#ffffff'
-                        },
-                        icon = 'xmark',
-                        iconColor = '#C0392B'
-                    })
+					QRCore.Functions.Notify(Lang:t('error.canceled'), 'error')
                 end
             else
-                lib.notify({
-                    id = 'no_player',
-                    title = Lang:t('error.no_player'),
-                    duration = 2500,
-                    style = {
-                        backgroundColor = '#141517',
-                        color = '#ffffff'
-                    },
-                    icon = 'xmark',
-                    iconColor = '#C0392B'
-                })
+				QRCore.Functions.Notify(Lang:t('error.no_player'), 'error')
             end
         else
-            lib.notify({
-                id = 'no_bandage',
-                title = Lang:t('error.no_bandage'),
-                duration = 2500,
-                style = {
-                    backgroundColor = '#141517',
-                    color = '#ffffff'
-                },
-                icon = 'xmark',
-                iconColor = '#C0392B'
-            })
+			QRCore.Functions.Notify(Lang:t('error.no_bandage'), 'error')
         end
     end, 'bandage')
 end)

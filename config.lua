@@ -8,6 +8,7 @@ Config.BillCost = 10
 Config.DeathTime = 300
 Config.CheckTime = 10
 Config.PainkillerInterval = 60
+Config.ShakeGameplayCam = 0.08 -- change this float to increase/decrease camera shake (0.00 to disable)
 
 Config.Locations = {
     ["checking"] = {

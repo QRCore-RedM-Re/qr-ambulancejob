@@ -520,12 +520,12 @@ local function ProcessDamage(ped)
                         local chance = math.random(100)
                         if (IsPedRunning(ped) or IsPedSprinting(ped)) then
                             if chance <= Config.LegInjuryChance.Running then
-                                ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', 0.08) -- change this float to increase/decrease camera shake
+                                ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', Config.ShakeGameplayCam) -- change this float to increase/decrease camera shake
                                 SetPedToRagdollWithFall(ped, 1500, 2000, 1, GetEntityForwardVector(ped), 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                             end
                         else
                             if chance <= Config.LegInjuryChance.Walking then
-                                ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', 0.08) -- change this float to increase/decrease camera shake
+                                ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', Config.ShakeGameplayCam) -- change this float to increase/decrease camera shake
                                 SetPedToRagdollWithFall(ped, 1500, 2000, 1, GetEntityForwardVector(ped), 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                             end
                         end
@@ -589,7 +589,7 @@ local function ProcessDamage(ped)
                         end
 
                         if not IsPedRagdoll(ped) and IsPedOnFoot(ped) and not IsPedSwimming(ped) then
-                            ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', 0.08) -- change this float to increase/decrease camera shake
+                            ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', Config.ShakeGameplayCam) -- change this float to increase/decrease camera shake
                             SetPedToRagdoll(ped, 5000, 1, 2)
                         end
 

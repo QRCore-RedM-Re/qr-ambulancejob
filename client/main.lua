@@ -786,9 +786,11 @@ end)
 
 RegisterNetEvent('QRCore:Client:OnPlayerUnload', function()
     local ped = PlayerPedId()
+    local GetPedArmour = Citizen.InvokeNative(0x2CE311A7, ped)
+    
     TriggerServerEvent("hospital:server:SetDeathStatus", false)
     TriggerServerEvent('hospital:server:SetLaststandStatus', false)
-    TriggerServerEvent("hospital:server:SetArmor", GetPedArmour(ped))
+    TriggerServerEvent("hospital:server:SetArmor", GetPedArmour)
     if bedOccupying then
         TriggerServerEvent("hospital:server:LeaveBed", bedOccupying)
     end
@@ -871,12 +873,13 @@ CreateThread(function()
 
             if hit and bodypart ~= 'NONE' then
                 local checkDamage = true
+                local GetPedArmour = Citizen.InvokeNative(0x2CE311A7, ped)
                 if damageDone >= Config.HealthDamage then
                     if weapon then
                         if armorDamaged and (bodypart == 'SPINE' or bodypart == 'UPPER_BODY') or weapon == Config.WeaponClasses['NOTHING'] then
                             checkDamage = false -- Don't check damage if the it was a body shot and the weapon class isn't that strong
                             if armorDamaged then
-                                TriggerServerEvent("hospital:server:SetArmor", GetPedArmour(ped))
+                                TriggerServerEvent("hospital:server:SetArmor", GetPedArmour)
                             end
                         end
 

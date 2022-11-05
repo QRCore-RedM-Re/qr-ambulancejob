@@ -237,8 +237,8 @@ local function ProcessRunStuff(ped, bone)
         end
     else
         print("Normal Walkstyle")
-        Citizen.InvokeNative(0x923583741DC87BCE, ped, walkHealthDict)
-        Citizen.InvokeNative(0xAA74EC0CB0AAEA2C, ped, walkHealthAnim)
+		Citizen.InvokeNative(0x923583741DC87BCE, ped, "arthur_healthy")
+		Citizen.InvokeNative(0x89F5E7ADECCCB49C, ped, "normal")
     end
 end
 

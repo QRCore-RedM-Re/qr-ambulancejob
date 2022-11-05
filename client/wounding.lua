@@ -83,7 +83,11 @@ RegisterNetEvent('hospital:client:UseBandage', function(itemName)
     }, {}, {}, function() -- Done
         StopAnimTask(ped, BandageDict, BandageAnim, 1.0)
         TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items[itemName], "remove")
-        SetEntityHealth(ped, GetEntityHealth(ped) + 10)
+		-- health adjust
+		local health = Citizen.InvokeNative(0x36731AC041289BB1, ped, 0) -- GetAttributeCoreValue (health)
+		local newhealth = health + 10
+		Citizen.InvokeNative(0xC6258F41D86676E0, ped, 0, newhealth) -- SetAttributeCoreValue (health)
+		-- end health adjust
         if math.random(1, 100) < 50 then
             RemoveBleed(1)
         end

@@ -5,6 +5,7 @@ Config.WipeInventoryOnRespawn = false
 Config.DispatchTimer = 180 --DispatchTimer*4
 Config.PromptKey = 0xE30CD707 -- R
 Config.BillCost = 10
+Config.TimeTillRespawn = 300
 Config.DeathTime = 300
 Config.CheckTime = 10
 Config.PainkillerInterval = 60

@@ -9,6 +9,8 @@ Config.DeathTime = 300
 Config.CheckTime = 10
 Config.PainkillerInterval = 60
 Config.ShakeGameplayCam = 0.08 -- change this float to increase/decrease camera shake (0.00 to disable)
+Config.TimeTillRespawn = 300 -- time in seconds until you respawn
+Config.MinimumRevive = 180 -- time until request for help is available (must be less than TimeTillRespawn)
 
 Config.Locations = {
     ["checking"] = {

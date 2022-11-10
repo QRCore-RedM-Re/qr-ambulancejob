@@ -1,8 +1,8 @@
 local QRCore = exports['qr-core']:GetCoreObject()
 
 Laststand = Laststand or {}
-Laststand.ReviveInterval = 360
-Laststand.MinimumRevive = 300
+Laststand.ReviveInterval = Config.TimeTillRespawn
+Laststand.MinimumRevive = Config.MinimumRevive
 InLaststand = false
 LaststandTime = 0
 lastStandDict = "ai_combat@damage@writhe@base"

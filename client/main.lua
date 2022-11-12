@@ -605,6 +605,13 @@ local function ProcessDamage(ped)
     end
 end
 
+RegisterNetEvent('ambulance:client:HealPlayer', function()
+    local player = PlayerPedId()
+    Citizen.InvokeNative(0xC6258F41D86676E0, player, 0, 100)
+    Citizen.InvokeNative(0xC6258F41D86676E0, player, 1, 100)
+    Citizen.InvokeNative(0xC6258F41D86676E0, player, 2, 100)
+end)
+
 -- Events
 RegisterNetEvent('ambulance:client:promptCheckin', function()
     if doctorCount >= Config.MinimalDoctors then
@@ -674,10 +681,11 @@ RegisterNetEvent('hospital:client:Revive', function()
         SetEntityInvincible(player, true)
         canLeaveBed = true
     end
-
+    
     TriggerServerEvent("hospital:server:RestoreWeaponDamage")
     SetEntityMaxHealth(player, 200)
     SetEntityHealth(player, GetEntityMaxHealth(player))
+    TriggerEvent("ambulance:client:HealPlayer")
     ClearPedBloodDamage(player)
     ResetAll()
     TriggerServerEvent('hud:server:RelieveStress', 100)
@@ -714,6 +722,7 @@ RegisterNetEvent('hospital:client:SetPain', function()
         isBleeding = tonumber(isBleeding)
     })
 end)
+
 
 RegisterNetEvent('hospital:client:KillPlayer', function()
     SetEntityHealth(PlayerPedId(), 0)

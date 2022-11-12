@@ -683,7 +683,7 @@ RegisterNetEvent('hospital:client:Revive', function()
     end
     
     TriggerServerEvent("hospital:server:RestoreWeaponDamage")
-    SetEntityMaxHealth(player, 200)
+    SetEntityMaxHealth(player, 100)
     SetEntityHealth(player, GetEntityMaxHealth(player))
     TriggerEvent("ambulance:client:HealPlayer")
     ClearPedBloodDamage(player)
@@ -788,7 +788,7 @@ end)
 
 RegisterNetEvent('hospital:client:adminHeal', function()
     local ped = PlayerPedId()
-    SetEntityHealth(ped, 200)
+    SetEntityHealth(ped, 100)
     TriggerServerEvent("QRCore:Server:SetMetaData", "hunger", 100)
     TriggerServerEvent("QRCore:Server:SetMetaData", "thirst", 100)
 end)

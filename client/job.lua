@@ -204,10 +204,11 @@ RegisterNetEvent('QRCore:Client:OnPlayerLoaded', function()
     TriggerServerEvent("hospital:server:SetDoctor")
     CreateThread(function()
         Wait(5000)
-        SetEntityMaxHealth(ped, 200)
-        SetEntityHealth(ped, 200)
-        SetPlayerHealthRechargeMultiplier(player, 1.0)
+        SetEntityMaxHealth(ped, Config.MaxHp)
+        SetEntityHealth(ped, Config.MaxHp)
+        SetPlayerHealthRechargeMultiplier(player, Config.RegenRate)
     end)
+    
     CreateThread(function()
         Wait(1000)
         QRCore.Functions.GetPlayerData(function(PlayerData)
@@ -271,84 +272,68 @@ RegisterNetEvent('hospital:client:CheckStatus', function()
 end)
 
 RegisterNetEvent('hospital:client:RevivePlayer', function()
-    QRCore.Functions.TriggerCallback('QRCore:HasItem', function(hasItem)
-        if hasItem then
-            local player, distance = GetClosestPlayer()
-            if player ~= -1 and distance < 5.0 then
-                local playerId = GetPlayerServerId(player)
-                isHealingPerson = true
-                if lib.progressCircle({
-                    duration = 5000,
-                    position = 'bottom',
-                    label = Lang:t('progress.revive'),
-                    useWhileDead = false,
-                    canCancel = true,
-                    disable = {
-                        move = false,
-                        car = false,
-                        combat = true,
-                        mouse = false,
-                    },
-                    anim = {
-                        dict = healAnimDict,
-                        clip = healAnim,
-                    },
-                })
-                then
-                    StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-					QRCore.Functions.Notify(Lang:t('success.revived'), 'success')
-                    TriggerServerEvent("hospital:server:RevivePlayer", playerId)
-                else
-                    StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-					QRCore.Functions.Notify(Lang:t('error.canceled'), 'error')
-                end
-            else
-				QRCore.Functions.Notify(Lang:t('error.no_player'), 'error')
-            end
+    local hasItem = QRCore.Functions.HasItem('firstaid', 1)
+    if hasItem then
+        local player, distance = GetClosestPlayer()
+        if player ~= -1 and distance < 5.0 then
+            local playerId = GetPlayerServerId(player)
+            isHealingPerson = true
+            local dict = loadAnimDict('script_re@gold_panner@gold_success')
+            TaskPlayAnim(PlayerPedId(), dict, 'SEARCH01', 8.0, 8.0, -1, 1, false, false, false)
+            FreezeEntityPosition(PlayerPedId(), true)
+            count = 1
+            QRCore.Functions.Progressbar("reviving", "Reviving...", 5000, false, true, {
+                disableMovement = true,
+                disableCarMovement = true,
+                disableMouse = false,
+                disableCombat = true,
+            }, {}, {}, {}, function()
+                ClearPedTasks(PlayerPedId())
+                TriggerServerEvent("hospital:server:RevivePlayer", playerId)
+                FreezeEntityPosition(PlayerPedId(), false)
+                count = 0
+                --print('I am done')
+                isHealingPerson = false
+            end)
         else
-			QRCore.Functions.Notify(Lang:t('error.no_firstaid'), 'error')
+            QRCore.Functions.Notify(Lang:t('error.no_player'), 'error')
         end
-    end, 'firstaid')
+    else
+        QRCore.Functions.Notify(Lang:t('error.no_firstaid'), 'error')
+    end
 end)
 
 RegisterNetEvent('hospital:client:TreatWounds', function()
-    QRCore.Functions.TriggerCallback('QRCore:HasItem', function(hasItem)
-        if hasItem then
-            local player, distance = GetClosestPlayer()
-            if player ~= -1 and distance < 5.0 then
-                local playerId = GetPlayerServerId(player)
-                if lib.progressCircle({
-                    duration = 5000,
-                    position = 'bottom',
-                    label = Lang:t('progress.healing'),
-                    useWhileDead = false,
-                    canCancel = true,
-                    disable = {
-                        move = false,
-                        car = false,
-                        combat = true,
-                        mouse = false,
-                    },
-                    anim = {
-                        dict = healAnimDict,
-                        clip = healAnim,
-                    },
-                })
-                then
-                    StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-					QRCore.Functions.Notify(Lang:t('success.helped_player'), 'success')
-                    TriggerServerEvent("hospital:server:TreatWounds", playerId)
-                else
-                    StopAnimTask(PlayerPedId(), healAnimDict, "exit", 1.0)
-					QRCore.Functions.Notify(Lang:t('error.canceled'), 'error')
-                end
-            else
-				QRCore.Functions.Notify(Lang:t('error.no_player'), 'error')
-            end
+    local hasItem = QRCore.Functions.HasItem('bandage', 1)
+    if hasItem then
+        local player, distance = GetClosestPlayer()
+        if player ~= -1 and distance < 5.0 then
+            local playerId = GetPlayerServerId(player)
+            isHealingPerson = true
+            local dict = loadAnimDict('script_re@gold_panner@gold_success')
+            TaskPlayAnim(PlayerPedId(), dict, 'SEARCH01', 8.0, 8.0, -1, 1, false, false, false)
+            FreezeEntityPosition(PlayerPedId(), true)
+            count = 1
+            QRCore.Functions.Progressbar("reviving", "Treast Wounds...", 5000, false, true, {
+                disableMovement = true,
+                disableCarMovement = true,
+                disableMouse = false,
+                disableCombat = true,
+            }, {}, {}, {}, function()
+                ClearPedTasks(PlayerPedId())
+                TriggerServerEvent("hospital:server:TreatWounds", playerId)
+                FreezeEntityPosition(PlayerPedId(), false)
+                count = 0
+                --print('I am done')
+                isHealingPerson = false
+            end)
         else
-			QRCore.Functions.Notify(Lang:t('error.no_bandage'), 'error')
+			QRCore.Functions.Notify(Lang:t('error.no_player'), 'error')
         end
-    end, 'bandage')
+    else
+		QRCore.Functions.Notify(Lang:t('error.no_bandage'), 'error')
+    end
+		
 end)
 
 -- Threads

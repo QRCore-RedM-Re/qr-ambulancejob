@@ -9,7 +9,8 @@ lua54 'yes'
 shared_scripts {
 	'@qr-core/shared/locale.lua',
 	'locale/en.lua',
-	'config.lua'
+	'config.lua',
+	'@ox_lib/init.lua'
 }
 
 client_scripts {

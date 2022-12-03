@@ -138,25 +138,25 @@ RegisterNetEvent('hospital:server:SetDoctor', function()
 end)
 
 RegisterNetEvent('hospital:server:RevivePlayer', function(playerId, isOldMan)
-	local src = source
-	local Player = QRCore.Functions.GetPlayer(src)
-	local Patient = QRCore.Functions.GetPlayer(playerId)
-	local oldMan = isOldMan or false
-	if Patient then
-		if oldMan then
-			if Player.Functions.RemoveMoney("cash", 5000, "revived-player") then
-				Player.Functions.RemoveItem('firstaid', 1)
-				TriggerClientEvent('inventory:client:ItemBox', src, QRCore.Shared.Items['firstaid'], "remove")
-				TriggerClientEvent('hospital:client:Revive', Patient.PlayerData.source)
-			else
-				TriggerClientEvent('QRCore:Notify', src, Lang:t('error.not_enough_money'), 'error')
-			end
-		else
-			Player.Functions.RemoveItem('firstaid', 1)
-			TriggerClientEvent('inventory:client:ItemBox', src, QRCore.Shared.Items['firstaid'], "remove")
-			TriggerClientEvent('hospital:client:Revive', Patient.PlayerData.source)
-		end
-	end
+    local src = source
+    local Player = QRCore.Functions.GetPlayer(src)
+    local Patient = QRCore.Functions.GetPlayer(playerId)
+    local oldMan = isOldMan or false
+    if Patient then
+        if oldMan then
+            if Player.Functions.RemoveMoney("cash", 5000, "revived-player") then
+                Player.Functions.RemoveItem('firstaid', 1)
+                TriggerClientEvent('inventory:client:ItemBox', src, QRCore.Shared.Items['firstaid'], "remove")
+                TriggerClientEvent('hospital:client:Revive', Patient.PlayerData.source)
+            else
+                TriggerClientEvent('QRCore:Notify', src, Lang:t('error.not_enough_money'), 'error')
+            end
+        else
+            Player.Functions.RemoveItem('firstaid', 1)
+            TriggerClientEvent('inventory:client:ItemBox', src, QRCore.Shared.Items['firstaid'], "remove")
+            TriggerClientEvent('hospital:client:Revive', Patient.PlayerData.source)
+        end
+    end
 end)
 
 RegisterNetEvent('hospital:server:SendDoctorAlert', function()

@@ -313,6 +313,7 @@ local function ResetAll()
         limbs = BodyParts,
         isBleeding = tonumber(isBleeding)
     })
+    Citizen.InvokeNative(0xC6258F41D86676E0, PlayerPedId(), 0, 100) -- SetAttributeCoreValue (health)
     TriggerServerEvent("QRCore:Server:SetMetaData", "hunger", 100)
     TriggerServerEvent("QRCore:Server:SetMetaData", "thirst", 100)
 end
@@ -730,6 +731,7 @@ end)
 
 RegisterNetEvent('hospital:client:HealInjuries', function(type)
     if type == "full" then
+        
         ResetAll()
     else
         ResetPartial()

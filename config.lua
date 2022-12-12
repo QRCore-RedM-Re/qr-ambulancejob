@@ -4,7 +4,7 @@ Config.MinimalDoctors = 2
 Config.WipeInventoryOnRespawn = false
 Config.DispatchTimer = 180 --DispatchTimer*4
 Config.PromptKey = 0xE30CD707 -- R
-Config.BillCost = 10
+Config.BillCost = 25
 Config.DeathTime = 300
 Config.CheckTime = 10
 Config.PainkillerInterval = 60
@@ -112,7 +112,7 @@ Config.Items = {
         NOTE: Anything under 100 and you are dead
     RegenRate :
 ]]
-Config.MaxHp = 200
+Config.MaxHp = 100
 Config.RegenRate = 0.0
 
 --[[

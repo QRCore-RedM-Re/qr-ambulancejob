@@ -110,7 +110,8 @@ local Translations = {
         veh_button = '~g~E~w~ - Vehicles',
         bed_out = '~g~E~w~ - To get out of bed..',
         lie_bed = 'Lie in bed ($%{cost})',
-        call_doc = 'Call a Doctor'
+        call_doc = 'Call a Doctor',
+        alert = 'One civil alerted the mediscs'
     },
     body = {
         head = 'Head',

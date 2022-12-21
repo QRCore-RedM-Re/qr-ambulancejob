@@ -5,8 +5,6 @@ Laststand.ReviveInterval = Config.TimeTillRespawn
 Laststand.MinimumRevive = Config.MinimumRevive
 InLaststand = false
 LaststandTime = 0
-lastStandDict = "ai_combat@damage@writhe@base"
-lastStandAnim = "writhe_loop"
 isEscorted = false
 local isEscorting = false
 -- Functions
@@ -42,46 +40,9 @@ function SetLaststand(bool, spawn)
     local ped = PlayerPedId()
     if bool then
         Wait(1000)
-        local pos = GetEntityCoords(ped)
-        local heading = GetEntityHeading(ped)
-
-        while GetEntitySpeed(ped) > 0.5 or IsPedRagdoll(ped) do
-            Wait(10)
-        end
-
-        TriggerServerEvent("InteractSound_SV:PlayOnSource", "demo", 0.1)
-
-        LaststandTime = Laststand.ReviveInterval
-
-        local ped = PlayerPedId()
-        if IsPedInAnyVehicle(ped) then
-            local veh = GetVehiclePedIsIn(ped)
-            local vehseats = GetVehicleModelNumberOfSeats(GetHashKey(GetEntityModel(veh)))
-            for i = -1, vehseats do
-                local occupant = GetPedInVehicleSeat(veh, i)
-                if occupant == ped then
-                    NetworkResurrectLocalPlayer(pos.x, pos.y, pos.z + 0.5, heading, true, false)
-                    SetPedIntoVehicle(ped, veh, i)
-                end
-            end
-        else
-            NetworkResurrectLocalPlayer(pos.x, pos.y, pos.z + 0.5, heading, true, false)
-        end
-
-        SetEntityHealth(ped, 150)
-
-        if IsPedInAnyVehicle(ped, false) then
-            LoadAnimation("veh@low@front_ps@idle_duck")
-            TaskPlayAnim(ped, "veh@low@front_ps@idle_duck", "sit", 1.0, 8.0, -1, 1, -1, false, false, false)
-        else
-            LoadAnimation(lastStandDict)
-            TaskPlayAnim(ped, lastStandDict, lastStandAnim, 1.0, 8.0, -1, 1, -1, false, false, false)
-        end
-
+        SetEntityHealth(ped, 0)
         InLaststand = true
-
         TriggerServerEvent('hospital:server:ambulanceAlert', Lang:t('info.civ_down'))
-
         CreateThread(function()
             while InLaststand do
                 ped = PlayerPedId()
@@ -120,7 +81,6 @@ function SetLaststand(bool, spawn)
             end
         end)
     else
-        TaskPlayAnim(ped, lastStandDict, "exit", 1.0, 8.0, -1, 1, -1, false, false, false)
         InLaststand = false
         LaststandTime = 0
     end
@@ -128,7 +88,6 @@ function SetLaststand(bool, spawn)
 end
 
 -- Events
-
 RegisterNetEvent('hospital:client:SetEscortingState', function(bool)
     isEscorting = bool
 end)

@@ -65,7 +65,7 @@ function SetLaststand(bool, spawn)
                     local killerName = killerId ~= -1 and GetPlayerName(killerId) .. " " .. "("..GetPlayerServerId(killerId)..")" or Lang:t('info.self_death')
                     local weaponLabel = Lang:t('info.wep_unknown')
                     local weaponName = Lang:t('info.wep_unknown')
-                    local weaponItem = QRCore.Shared.Weapons[killerWeapon]
+                    local weaponItem = QRCore.Shared.GetWeapon(killerWeapon)
                     if weaponItem then
                         weaponLabel = weaponItem.label
                         weaponName = weaponItem.name

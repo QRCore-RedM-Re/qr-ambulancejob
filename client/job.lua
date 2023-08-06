@@ -236,7 +236,7 @@ RegisterNetEvent('hospital:client:CheckStatus', function()
                             TriggerEvent('chat:addMessage', {
                                 color = { 255, 0, 0 },
                                 multiline = false,
-                                args = { Lang:t('info.status'), QRCore.Shared.Weapons[v2].damagereason }
+                                args = { Lang:t('info.status'), QRCore.Shared.GetWeapon[v].damagereason }
                             })                        end
                     elseif result["BLEED"] > 0 then
                         TriggerEvent('chat:addMessage', {

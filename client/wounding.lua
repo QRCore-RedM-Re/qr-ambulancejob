@@ -52,7 +52,7 @@ RegisterNetEvent('hospital:client:UseIfaks', function(itemName)
 		flags = 1,
     }, {}, {}, function() -- Done
         StopAnimTask(ped, IfaksDict, IfaksAnim, 1.0)
-        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items[itemName], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.GetItem(itemName), "remove")
         TriggerServerEvent('hud:server:RelieveStress', math.random(12, 24))
         SetEntityHealth(ped, GetEntityHealth(ped) + 10)
         onPainKillers = true
@@ -81,7 +81,7 @@ RegisterNetEvent('hospital:client:UseBandage', function(itemName)
 		flags = 1,
     }, {}, {}, function() -- Done
         StopAnimTask(ped, BandageDict, BandageAnim, 1.0)
-        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items[itemName], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.GetItem(itemName), "remove")
 		-- health adjust
 		Citizen.InvokeNative(0xC6258F41D86676E0, ped, 0, 100) -- SetAttributeCoreValue (health)
 		-- end health adjust
@@ -110,7 +110,7 @@ RegisterNetEvent('hospital:client:UsePainkillers', function(itemName)
 		flags = 1,
     }, {}, {}, function() -- Done
         StopAnimTask(ped, PainkillersDict, PainkillersAnim, 1.0)
-        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.Items[itemName], "remove")
+        TriggerEvent("inventory:client:ItemBox", QRCore.Shared.GetItem(itemName), "remove")
         onPainKillers = true
         if painkillerAmount < 3 then
             painkillerAmount = painkillerAmount + 1

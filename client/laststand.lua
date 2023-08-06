@@ -1,5 +1,3 @@
-local QRCore = exports['qr-core']:GetCoreObject()
-
 Laststand = Laststand or {}
 Laststand.ReviveInterval = Config.TimeTillRespawn
 Laststand.MinimumRevive = Config.MinimumRevive

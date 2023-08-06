@@ -544,3 +544,7 @@ Config.VehicleSettings = {
         }
     }
 }
+
+---------------------------------------------
+
+QRCore = exports['qr-core']:GetCoreObject()

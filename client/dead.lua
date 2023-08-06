@@ -1,5 +1,3 @@
-local QRCore = exports['qr-core']:GetCoreObject()
-
 deathTime = 0
 -- Functions
 local function loadAnimDict(dict)

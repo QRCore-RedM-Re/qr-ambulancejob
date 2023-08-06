@@ -1,6 +1,5 @@
 local PlayerInjuries = {}
 local PlayerWeaponWounds = {}
-local QRCore = exports['qr-core']:GetCoreObject()
 -- Events
 
 -- Compatibility with txAdmin Menu's heal options.
@@ -21,7 +20,6 @@ RegisterNetEvent('hospital:server:SendToBed', function(bedId, isRevive)
 	TriggerClientEvent('hospital:client:SetBed', -1, bedId, true)
 	Player.Functions.RemoveMoney("bank", Config.BillCost , "respawned-at-hospital")
 	TriggerEvent('qr-bossmenu:server:addAccountMoney', "ambulance", Config.BillCost)
-	--TriggerClientEvent('hospital:client:SendBillEmail', src, Config.BillCost)
 end)
 
 RegisterNetEvent('hospital:server:RespawnAtHospital', function(closestBed)
@@ -38,7 +36,6 @@ RegisterNetEvent('hospital:server:RespawnAtHospital', function(closestBed)
 		end
 		Player.Functions.RemoveMoney("bank", Config.BillCost, "respawned-at-hospital")
 		TriggerEvent('qr-bossmenu:server:addAccountMoney', "ambulance", Config.BillCost)
-		--TriggerClientEvent('hospital:client:SendBillEmail', src, Config.BillCost)
 	else
 		--print("All beds were full, placing in first bed as fallback")
 		TriggerClientEvent('hospital:client:SendToBed', src, 1, Config.Locations["beds"][1], true)
@@ -50,7 +47,6 @@ RegisterNetEvent('hospital:server:RespawnAtHospital', function(closestBed)
 		end
 		Player.Functions.RemoveMoney("bank", Config.BillCost, "respawned-at-hospital")
 		TriggerEvent('qr-bossmenu:server:addAccountMoney', "ambulance", Config.BillCost)
-		--TriggerClientEvent('hospital:client:SendBillEmail', src, Config.BillCost)
 	end
 end)
 
@@ -337,7 +333,7 @@ end, 'admin')
 QRCore.Functions.CreateUseableItem("ifaks", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
 	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-                TriggerClientEvent("hospital:client:UseIfaks", source, item.name)
+		TriggerClientEvent("hospital:client:UseIfaks", source, item.name)
     end
 end)
 

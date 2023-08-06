@@ -1,5 +1,3 @@
-local QRCore = exports['qr-core']:GetCoreObject()
-
 local getOutDict = 'script_re@campfire_massacre'
 local getOutAnim = 'cry_getup_man'
 local walkHealthDict = 'arthur_healthy'
@@ -682,7 +680,7 @@ RegisterNetEvent('hospital:client:Revive', function()
         SetEntityInvincible(player, true)
         canLeaveBed = true
     end
-    
+
     TriggerServerEvent("hospital:server:RestoreWeaponDamage")
     SetEntityMaxHealth(player, 100)
     SetEntityHealth(player, GetEntityMaxHealth(player))
@@ -731,7 +729,7 @@ end)
 
 RegisterNetEvent('hospital:client:HealInjuries', function(type)
     if type == "full" then
-        
+
         ResetAll()
     else
         ResetPartial()
@@ -798,7 +796,7 @@ end)
 RegisterNetEvent('QRCore:Client:OnPlayerUnload', function()
     local ped = PlayerPedId()
     local GetPedArmour = Citizen.InvokeNative(0x2CE311A7, ped)
-    
+
     TriggerServerEvent("hospital:server:SetDeathStatus", false)
     TriggerServerEvent('hospital:server:SetLaststandStatus', false)
     TriggerServerEvent("hospital:server:SetArmor", GetPedArmour)

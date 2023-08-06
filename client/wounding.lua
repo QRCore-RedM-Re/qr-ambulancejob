@@ -7,7 +7,6 @@ local BandageDict = "mini_games@story@mob4@heal_jules@bandage@arthur"
 local BandageAnim = "bandage_fast"
 local PainkillersDict = "mini_games@story@mob4@heal_jules@bandage@arthur"
 local PainkillersAnim = "bandage_start"
-local QRCore = exports['qr-core']:GetCoreObject()
 
 -- Functions
 local function DoBleedAlert()

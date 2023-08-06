@@ -1,7 +1,6 @@
 isHealingPerson = false
 healAnimDict = "mini_games@story@mob4@heal_jules@bandage@arthur"
 healAnim = "bandage_fast"
-local QRCore = exports['qr-core']:GetCoreObject()
 
 local statusCheckPed = nil
 local PlayerJob = {}
@@ -58,35 +57,23 @@ function TakeOutVehicle(vehicleInfo)
 end
 
 function MenuGarage()
-    local vehicleMenu = {
-        {
-            header = Lang:t('menu.amb_vehicles'),
-            isMenuHeader = true
-        }
-    }
+    local vehicleMenu = {}
 
     local authorizedVehicles = Config.AuthorizedVehicles[QRCore.Functions.GetPlayerData().job.grade.level]
     for veh, label in pairs(authorizedVehicles) do
         vehicleMenu[#vehicleMenu+1] = {
-            header = label,
-            txt = "",
-            params = {
-                event = "ambulance:client:TakeOutVehicle",
-                args = {
-                    vehicle = veh
-                }
-            }
+            title = label,
+            event = "ambulance:client:TakeOutVehicle",
+            args = { vehicle = veh }
         }
     end
-    vehicleMenu[#vehicleMenu+1] = {
-        header = Lang:t('menu.close'),
-        txt = "",
-        params = {
-            event = "qr-menu:client:closeMenu"
-        }
 
-    }
-    exports['qr-menu']:openMenu(vehicleMenu)
+    lib.registerContext({
+        id = 'doctor_vehicles',
+        title = Lang:t('menu.amb_vehicles'),
+        options = vehicleMenu
+    })
+    lib.showContext('doctor_vehicles')
 end
 
 function createAmbuPrompts()
@@ -208,7 +195,7 @@ RegisterNetEvent('QRCore:Client:OnPlayerLoaded', function()
         SetEntityHealth(ped, Config.MaxHp)
         SetPlayerHealthRechargeMultiplier(player, Config.RegenRate)
     end)
-    
+
     CreateThread(function()
         Wait(1000)
         QRCore.Functions.GetPlayerData(function(PlayerData)
@@ -333,7 +320,7 @@ RegisterNetEvent('hospital:client:TreatWounds', function()
     else
 		QRCore.Functions.Notify(Lang:t('error.no_bandage'), 'error')
     end
-		
+
 end)
 
 -- Threads
